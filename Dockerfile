@@ -32,7 +32,8 @@ WORKDIR /app
 
 # Copy application files
 COPY src/ ./src/
-COPY nginx.conf /etc/nginx/sites-available/videobot
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY nginx-site.conf /etc/nginx/sites-available/videobot
 COPY www/ ./www/
 
 # Set up nginx configuration and permissions
