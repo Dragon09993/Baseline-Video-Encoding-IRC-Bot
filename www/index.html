@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>x220 Video Collection</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            margin: 0;
+            padding: 20px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50, #34495e);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 2.5em;
+            font-weight: 300;
+        }
+        
+        .header p {
+            margin: 10px 0 0 0;
+            opacity: 0.8;
+            font-size: 1.1em;
+        }
+        
+        .stats {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            margin-top: 20px;
+            flex-wrap: wrap;
+        }
+        
+        .stat {
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2em;
+            font-weight: bold;
+            display: block;
+        }
+        
+        .stat-label {
+            font-size: 0.9em;
+            opacity: 0.7;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .video-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: 25px;
+            margin-top: 20px;
+        }
+        
+        .video-card {
+            border: 1px solid #ddd;
+            border-radius: 10px;
+            overflow: hidden;
+            background: #fafafa;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+        
+        .video-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.15);
+        }
+        
+        .video-preview {
+            position: relative;
+            width: 100%;
+            height: 200px;
+            overflow: hidden;
+            background: #000;
+        }
+        
+        .video-preview video {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+        
+        .video-info {
+            padding: 20px;
+        }
+        
+        .video-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+            word-break: break-word;
+            line-height: 1.3;
+        }
+        
+        .video-meta {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9em;
+            color: #666;
+            margin-bottom: 15px;
+        }
+        
+        .video-actions {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .btn {
+            padding: 8px 16px;
+            border: none;
+            border-radius: 5px;
+            text-decoration: none;
+            font-size: 0.9em;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .btn-primary {
+            background: #3498db;
+            color: white;
+        }
+        
+        .btn-primary:hover {
+            background: #2980b9;
+        }
+        
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+        
+        .btn-secondary:hover {
+            background: #7f8c8d;
+        }
+        
+        .no-videos {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+        
+        .no-videos h3 {
+            margin-bottom: 10px;
+            font-size: 1.5em;
+        }
+        
+        .search-bar {
+            margin-bottom: 20px;
+            text-align: center;
+        }
+        
+        .search-bar input {
+            padding: 12px 20px;
+            border: 2px solid #ddd;
+            border-radius: 25px;
+            font-size: 1em;
+            width: 300px;
+            max-width: 90%;
+        }
+        
+        .search-bar input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+        
+        @media (max-width: 768px) {
+            .video-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats {
+                gap: 15px;
+            }
+            
+            .header h1 {
+                font-size: 2em;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📹 x220 Video Collection</h1>
+            <p>Encoded videos optimized for ThinkPad x220 baseline profile</p>
+            <div class="stats">
+                <div class="stat">
+                    <span class="stat-number" id="video-count">0</span>
+                    <span class="stat-label">Videos</span>
+                </div>
+                <div class="stat">
+                    <span class="stat-number" id="total-size">0 MB</span>
+                    <span class="stat-label">Total Size</span>
+                </div>
+            </div>
+        </div>
+        
+        <div class="content">
+            <div class="search-bar">
+                <input type="text" id="search" placeholder="🔍 Search videos..." onkeyup="filterVideos()">
+            </div>
+            
+            <div class="video-grid" id="video-grid">
+                <!-- Videos will be populated by JavaScript -->
+            </div>
+            
+            <div class="no-videos" id="no-videos" style="display: none;">
+                <h3>No videos found</h3>
+                <p>Share some video URLs in IRC to get started!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let allVideos = [];
+        
+        async function loadVideos() {
+            try {
+                const response = await fetch('/api/videos');
+                if (response.ok) {
+                    allVideos = await response.json();
+                } else {
+                    // Fallback: parse the directory listing
+                    const html = await fetch('/').then(r => r.text());
+                    allVideos = parseDirectoryListing(html);
+                }
+                displayVideos(allVideos);
+                updateStats();
+            } catch (error) {
+                console.error('Error loading videos:', error);
+                // Show no videos message
+                document.getElementById('no-videos').style.display = 'block';
+            }
+        }
+        
+        function parseDirectoryListing(html) {
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, 'text/html');
+            const links = doc.querySelectorAll('a[href$=".mp4"], a[href$=".mkv"], a[href$=".avi"], a[href$=".mov"]');
+            
+            return Array.from(links).map(link => ({
+                name: link.textContent.trim(),
+                url: link.href,
+                size: 'Unknown'
+            }));
+        }
+        
+        function displayVideos(videos) {
+            const grid = document.getElementById('video-grid');
+            const noVideos = document.getElementById('no-videos');
+            
+            if (videos.length === 0) {
+                grid.innerHTML = '';
+                noVideos.style.display = 'block';
+                return;
+            }
+            
+            noVideos.style.display = 'none';
+            
+            grid.innerHTML = videos.map(video => `
+                <div class="video-card" data-name="${video.name.toLowerCase()}">
+                    <div class="video-preview">
+                        <video preload="metadata" muted>
+                            <source src="${video.url}" type="video/mp4">
+                        </video>
+                    </div>
+                    <div class="video-info">
+                        <div class="video-title">${video.name}</div>
+                        <div class="video-meta">
+                            <span>Size: ${video.size}</span>
+                            <span>x220 Optimized</span>
+                        </div>
+                        <div class="video-actions">
+                            <a href="${video.url}" class="btn btn-primary" target="_blank">
+                                ▶️ Play
+                            </a>
+                            <a href="${video.url}" class="btn btn-secondary" download>
+                                ⬇️ Download
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+        
+        function filterVideos() {
+            const searchTerm = document.getElementById('search').value.toLowerCase();
+            const cards = document.querySelectorAll('.video-card');
+            let visibleCount = 0;
+            
+            cards.forEach(card => {
+                const name = card.dataset.name;
+                if (name.includes(searchTerm)) {
+                    card.style.display = 'block';
+                    visibleCount++;
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+            
+            document.getElementById('no-videos').style.display = 
+                visibleCount === 0 ? 'block' : 'none';
+        }
+        
+        function updateStats() {
+            document.getElementById('video-count').textContent = allVideos.length;
+            // Note: Size calculation would need server-side support
+        }
+        
+        function formatFileSize(bytes) {
+            if (bytes === 0) return '0 Bytes';
+            const k = 1024;
+            const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+            const i = Math.floor(Math.log(bytes) / Math.log(k));
+            return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
+        }
+        
+        // Load videos when page loads
+        document.addEventListener('DOMContentLoaded', loadVideos);
+    </script>
+</body>
+</html>

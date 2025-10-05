@@ -1,0 +1,8 @@
+# IRC Bot Dependencies
+irc>=20.0.0
+
+# HTTP Server Dependencies  
+cryptography>=3.4.8
+
+# Utility Dependencies
+requests>=2.28.0

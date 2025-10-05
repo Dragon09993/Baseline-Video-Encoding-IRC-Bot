@@ -1,0 +1,29 @@
+# Temporary files
+temp/
+*.tmp
+*.log
+
+# Environment variables
+.env
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Docker
+.dockerignore
+
+# IDE
+.vscode/
+.idea/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output videos (optional - you may want to track these)
+output/*.mp4
+output/*.mkv
+output/*.avi

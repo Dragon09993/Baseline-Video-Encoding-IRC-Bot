@@ -1,0 +1,64 @@
+version: '3.8'
+
+services:
+  irc-video-bot:
+    build: .
+    container_name: irc_video_bot
+    restart: unless-stopped
+    
+    # GPU support for RTX 4060
+    runtime: nvidia
+    
+    # Environment variables
+    environment:
+      - NVIDIA_VISIBLE_DEVICES=all
+      - NVIDIA_DRIVER_CAPABILITIES=compute,utility,video
+      - IRC_SERVER=${IRC_SERVER:-irc.libera.chat}
+      - IRC_PORT=${IRC_PORT:-6667}
+      - IRC_CHANNEL=${IRC_CHANNEL:-#test}
+      - IRC_NICKNAME=${IRC_NICKNAME:-videobot}
+      - IRC_PASSWORD=${IRC_PASSWORD}
+    
+    # Port mapping - nginx on port 8084, bind to all interfaces
+    ports:
+      - "0.0.0.0:8084:8084"
+    
+    # Volume mounts
+    volumes:
+      # Mount output directory to host for persistence
+      - ./output:/app/output
+      # Mount temp directory (optional - for debugging)
+      - ./temp:/app/temp
+      # Mount logs directory for log persistence
+      - ./logs:/app/logs
+      # Mount custom web interface
+      - ./www:/app/www
+    
+    # Health check
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8084/"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 40s
+    
+    # Resource limits
+    deploy:
+      resources:
+        limits:
+          memory: 2G
+          cpus: '1.0'
+        reservations:
+          memory: 512M
+          cpus: '0.5'
+    
+    # Logging configuration
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+networks:
+  default:
+    driver: bridge
