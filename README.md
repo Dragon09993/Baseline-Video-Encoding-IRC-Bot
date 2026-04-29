@@ -4,13 +4,13 @@ An automated IRC bot that monitors channels for video URLs, downloads them using
 
 ## Features
 
-- 🤖 **IRC Bot**: Monitors IRC channels for video URLs
-- 📺 **Video Processing**: Downloads and encodes videos using yt-dlp and ffmpeg
-- � **GPU Acceleration**: RTX 4060 NVENC encoding with CPU fallback
-- 🎬 **Lighthttpd Server**: Proper video streaming with range requests on port 8084
-- 🐋 **Docker**: Fully containerized with Docker Compose and NVIDIA runtime
-- 📱 **x220 Optimized**: Encodes with baseline profile for compatibility
-- 🌐 **Web Interface**: HTML5 video player with seeking and mobile support
+-  **IRC Bot**: Monitors IRC channels for video URLs
+-  **Video Processing**: Downloads and encodes videos using yt-dlp and ffmpeg
+-  **GPU Acceleration**: RTX 4060 NVENC encoding with CPU fallback
+-  **Lighthttpd Server**: Proper video streaming with range requests on port 8084
+-  **Docker**: Fully containerized with Docker Compose and NVIDIA runtime
+-  **x220 Optimized**: Encodes with baseline profile for compatibility
+-  **Web Interface**: HTML5 video player with seeking and mobile support
 
 ## Quick Start
 
@@ -139,8 +139,8 @@ Just paste video URLs in the monitored channel:
 
 ```
 <user> Check out this video: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-<videobot_x220> 📹 Processing video: https://www.youtube.com/watch?v=dQw4w9WgXcQ
-<videobot_x220> ✅ Video ready: http://10.0.0.2:8084/Never_Gonna_Give_You_Up-10-05-25_14:30-x220.mp4 (requested by user)
+<videobot_x220>  Processing video: https://www.youtube.com/watch?v=dQw4w9WgXcQ
+<videobot_x220>  Video ready: http://10.0.0.2:8084/Never_Gonna_Give_You_Up-10-05-25_14:30-x220.mp4 (requested by user)
 ```
 
 ### Web Interface
