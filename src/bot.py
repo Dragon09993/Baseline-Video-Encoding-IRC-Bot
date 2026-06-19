@@ -16,7 +16,7 @@ from irc.client import NickMask
 import subprocess
 import threading
 import queue
-
+from pprint import pprint
 # Configure logging
 logging.basicConfig(
     level=logging.INFO,
@@ -30,6 +30,7 @@ logger = logging.getLogger(__name__)
 
 class VideoBot(irc.bot.SingleServerIRCBot):
     def __init__(self, channel, nickname, server, port=6667, password=None):
+        logger.info(f"Initializing bot with server={server}:{port}, channel={channel}, nickname={nickname}")
         irc.bot.SingleServerIRCBot.__init__(self, [(server, port, password)], nickname, nickname)
         self.channel = channel
         self.processing_queue = queue.Queue()
@@ -38,11 +39,12 @@ class VideoBot(irc.bot.SingleServerIRCBot):
         
         # URL patterns for video sites
         self.url_patterns = [
-            r'https?://(?:www\.)?youtube\.com/watch\?v=[\w-]+',
-            r'https?://youtu\.be/[\w-]+',
-            r'https?://(?:www\.)?vimeo\.com/\d+',
-            r'https?://(?:www\.)?dailymotion\.com/video/[\w-]+',
-            r'https?://(?:www\.)?twitch\.tv/videos/\d+',
+            r'https?://(?:www\.)?youtube\.com/watch\?v=[\w-]+(?:\S*)?',
+            r'https?://(?:www\.)?youtube\.com/shorts/[\w-]+(?:\?[^\s]*)?',
+            r'https?://youtu\.be/[\w-]+(?:\?[^\s]*)?',
+            r'https?://(?:www\.)?vimeo\.com/\d+(?:\?[^\s]*)?',
+            r'https?://(?:www\.)?dailymotion\.com/video/[\w-]+(?:\?[^\s]*)?',
+            r'https?://(?:www\.)?twitch\.tv/videos/\d+(?:\?[^\s]*)?',
             # Add more patterns as needed
         ]
         
@@ -52,12 +54,31 @@ class VideoBot(irc.bot.SingleServerIRCBot):
     def on_welcome(self, c, e):
         logger.info(f"Connected to server, joining {self.channel}")
         c.join(self.channel)
+        logger.info(f"Successfully joined {self.channel}")
+
+    def on_join(self, c, e):
+        """Log when someone joins the channel"""
+        logger.info(f"JOIN event: {e.source} joined {e.target}")
+        if e.source.nick == self.connection.get_nickname():
+            logger.info("Bot successfully joined the channel!")
+
+    def on_part(self, c, e):
+        """Log when someone leaves the channel"""
+        logger.info(f"PART event: {e.source} left {e.target}")
+
+    def on_disconnect(self, c, e):
+        """Log disconnection"""
+        logger.warning(f"Disconnected from server: {e}")
+
+    def on_all_raw_messages(self, c, e):
+        """Log ALL raw IRC messages for debugging"""
+        logger.debug(f"RAW IRC: {e.type} from {e.source}: {e.arguments}")
 
     def on_pubmsg(self, c, e):
         """Handle public messages in the channel"""
         message = e.arguments[0]
         nick = e.source.nick
-        
+        logger.info(f"Received message from {nick}: {message}")
         # Look for video URLs in the message
         urls = self.extract_video_urls(message)
         if urls:
@@ -70,7 +91,8 @@ class VideoBot(irc.bot.SingleServerIRCBot):
         """Handle private messages"""
         message = e.arguments[0]
         nick = e.source.nick
-        
+        logger.info(f"Received private message from {nick}: {message}")
+
         # Look for video URLs in private messages too
         urls = self.extract_video_urls(message)
         if urls:
@@ -81,10 +103,13 @@ class VideoBot(irc.bot.SingleServerIRCBot):
 
     def extract_video_urls(self, message):
         """Extract video URLs from a message"""
+        logger.info(f"Extracting URLs from message: {message}")
         urls = []
+        logger.info(self.url_patterns)
         for pattern in self.url_patterns:
             matches = re.findall(pattern, message)
             urls.extend(matches)
+            logger.info(urls)
         return urls
 
     def process_videos(self):
@@ -263,11 +288,17 @@ def main():
     bot = VideoBot(channel, nickname, server, port, password)
     
     try:
+        logger.info("Starting IRC bot...")
         bot.start()
     except KeyboardInterrupt:
         logger.info("Bot stopped by user")
     except Exception as e:
-        logger.error(f"Bot crashed: {e}")
+        logger.error(f"Bot crashed with exception: {e}")
+        logger.error(f"Exception type: {type(e)}")
+        import traceback
+        logger.error(f"Traceback: {traceback.format_exc()}")
+    finally:
+        logger.info("Bot shutdown complete")
 
 if __name__ == "__main__":
     main()
